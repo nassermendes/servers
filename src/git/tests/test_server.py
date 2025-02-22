@@ -1,8 +1,10 @@
-import pytest
-from pathlib import Path
-import git
-from mcp_server_git.server import git_checkout
 import shutil
+from pathlib import Path
+
+import git
+import pytest
+from mcp_server_git.server import git_checkout
+
 
 @pytest.fixture
 def test_repository(tmp_path: Path):
@@ -17,12 +19,14 @@ def test_repository(tmp_path: Path):
 
     shutil.rmtree(repo_path)
 
+
 def test_git_checkout_existing_branch(test_repository):
     test_repository.git.branch("test-branch")
     result = git_checkout(test_repository, "test-branch")
 
     assert "Switched to branch 'test-branch'" in result
     assert test_repository.active_branch.name == "test-branch"
+
 
 def test_git_checkout_nonexistent_branch(test_repository):
 

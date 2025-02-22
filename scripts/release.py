@@ -6,17 +6,17 @@
 #     "tomlkit>=0.13.2"
 # ]
 # ///
-import sys
-import re
-import click
-from pathlib import Path
-import json
-import tomlkit
 import datetime
+import json
+import re
 import subprocess
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Iterator, NewType, Protocol
 
+import click
+import tomlkit
 
 Version = NewType("Version", str)
 GitHash = NewType("GitHash", str)
@@ -144,13 +144,12 @@ def cli():
 def update_packages(directory: Path, git_hash: GitHash) -> int:
     # Detect package type
     path = directory.resolve(strict=True)
-    version = gen_version()
 
     for package in find_changed_packages(path, git_hash):
         name = package.package_name()
-        package.update_version(version)
+        package.update_version(gen_version())
 
-        click.echo(f"{name}@{version}")
+        click.echo(f"{name}@{gen_version()}")
 
     return 0
 
@@ -163,14 +162,13 @@ def update_packages(directory: Path, git_hash: GitHash) -> int:
 def generate_notes(directory: Path, git_hash: GitHash) -> int:
     # Detect package type
     path = directory.resolve(strict=True)
-    version = gen_version()
 
-    click.echo(f"# Release : v{version}")
+    click.echo(f"# Release : v{gen_version()}")
     click.echo("")
     click.echo("## Updated packages")
     for package in find_changed_packages(path, git_hash):
         name = package.package_name()
-        click.echo(f"- {name}@{version}")
+        click.echo(f"- {name}@{gen_version()}")
 
     return 0
 
@@ -192,7 +190,6 @@ def generate_version() -> int:
 def generate_matrix(directory: Path, git_hash: GitHash, pypi: bool, npm: bool) -> int:
     # Detect package type
     path = directory.resolve(strict=True)
-    version = gen_version()
 
     changes = []
     for package in find_changed_packages(path, git_hash):
